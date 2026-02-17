@@ -1,37 +1,38 @@
-import { Assets as NavigationAssets } from '@react-navigation/elements';
-import { DarkTheme, DefaultTheme } from '@react-navigation/native';
-import { Asset } from 'expo-asset';
-import { createURL } from 'expo-linking';
-import * as SplashScreen from 'expo-splash-screen';
+import 'react-native-gesture-handler'; // MUST BE LINE 1
 import * as React from 'react';
 import { useColorScheme } from 'react-native';
-import { Navigation } from './navigation';
+import { NavigationContainer, DarkTheme, DefaultTheme } from '@react-navigation/native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import * as SplashScreen from 'expo-splash-screen';
 
-Asset.loadAsync([
-  ...NavigationAssets,
-  require('./assets/newspaper.png'),
-  require('./assets/bell.png'),
-]);
+// Import the Drawer logic we fixed earlier
+import AppContext from './navigation/navigation'; 
 
+// Keep the splash screen visible until the app is ready
 SplashScreen.preventAutoHideAsync();
 
-const prefix = createURL('/');
-
-export function App() {
+export default function App() {
   const colorScheme = useColorScheme();
+  const theme = colorScheme === 'dark' ? DarkTheme : DefaultTheme;
 
-  const theme = colorScheme === 'dark' ? DarkTheme : DefaultTheme
+  // Handle splash screen hiding once the UI is mounted
+  React.useEffect(() => {
+    const prepare = async () => {
+      try {
+        // You can re-enable Asset.loadAsync here if needed later
+        await new Promise(resolve => setTimeout(resolve, 500)); // Small delay for stability
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        await SplashScreen.hideAsync();
+      }
+    };
+    prepare();
+  }, []);
 
   return (
-    <Navigation
-      theme={theme}
-      linking={{
-        enabled: 'auto',
-        prefixes: [prefix],
-      }}
-      onReady={() => {
-        SplashScreen.hideAsync();
-      }}
-    />
+    <SafeAreaProvider>
+        <AppContext />
+    </SafeAreaProvider>
   );
 }
