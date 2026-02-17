@@ -1,4 +1,4 @@
-# Starter Template with React Navigation
+# Template for Nested Navigators (Stack,Drawer,Tabs) all in one Mobile Application
 
 This is a minimal starter template for React Native apps using Expo and React Navigation.
 
